@@ -1,7 +1,6 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const CityList = require('./CityList');
-const cron = require('node-cron');
 
 const app = express();
 const port = 3000;
@@ -48,11 +47,13 @@ app.get('/api/weather', async (req, res) => {
     }
 });
 
-cron.schedule('*/10 * * * *', async () => {
+app.get('/api/cron', async (req, res) => {
+    console.log("[cron] STARTED");
     try {
 
         for (const city of CityList) {
             const cityName = city.cityName;
+
             const data = await getDataFromHtml('https://www.mgm.gov.tr/tahmin/il-ve-ilceler.aspx?il=' + cityName, 3);
 
             const date = new Date();
@@ -74,13 +75,15 @@ cron.schedule('*/10 * * * *', async () => {
             });
 
             dynamoDBClient.send(putItemCommand).then(response => {
-                console.log("[PutDynamo] Item inserted :: City=" + cityName);
+                console.log("[cron] Item inserted :: City=" + cityName);
                 console.log("--------------------");
             })
 
         }
+
+        console.log("[cron] FINISHED");
     } catch (error) {
-        console.error('[scheduler] Error:', error.message);
+        console.error('[cron] Error:', error.message);
     }
 })
 
@@ -91,12 +94,14 @@ async function getDataFromHtml(url, maxRetries) {
     let weatherData = {};
 
     while (retries < maxRetries) {
+        retries++;
+        console.log(`[cron] scrapping ${retries}/3 url:`, url);
         try {
             await page.goto(url, { waitUntil: 'load' });
 
             // Wait for page selector data loading
             //await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-deger.ng-binding');
-            await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-havadurumu > div.anlik-sicaklik-havadurumu-ikonu > img');
+            //await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-havadurumu > div.anlik-sicaklik-havadurumu-ikonu > img');
 
             // Parse required values and set to parameters
             const currentWeather = await page.$eval('div.anlik-sicaklik-deger.ng-binding', el => el.textContent.trim());
@@ -111,14 +116,14 @@ async function getDataFromHtml(url, maxRetries) {
             currentDate = currentDate.replace(".", ":");
             weatherData.currentDate = currentDate;
 
-            console.log("currentWeatherIconUrl:", currentWeatherIconUrl);
             currentWeatherIconUrl = currentWeatherIconUrl.replace("..", "https://www.mgm.gov.tr");
             weatherData.currentWeatherIconUrl = currentWeatherIconUrl;
+
             weatherData.humidity = humidityValue;
 
             return weatherData;
         }catch (error) {
-            console.error(`Retry ${retries + 1}/${maxRetries}. Error: ${error.message}`);
+            console.error(`Retry ${retries}/${maxRetries}. Error: ${error.message}`);
         }
     }
 }
