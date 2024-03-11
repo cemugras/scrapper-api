@@ -38,9 +38,7 @@ app.get('/api/weather', async (req, res) => {
             temperatureSign: queryItems[0].temperatureSign.S,
             humidity: queryItems[0].humidity.S
         }
-        res.json({
-            result
-        });
+        res.status(200).json({result});
     } catch (error) {
         console.error('Error:', error.message);
         res.status(500).json({error: 'Internal server error.'});
