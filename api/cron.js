@@ -1,57 +1,22 @@
-const express = require('express');
-const CityList = require('./CityList');
-
-const app = express();
-const port = 3000;
-
+const CityList = require("./CityList");
+const {PutItemCommand, DynamoDBClient} = require("@aws-sdk/client-dynamodb");
+const puppeteer = require("puppeteer");
 const {fromEnv} = require("@aws-sdk/credential-providers");
-const {DynamoDBClient, QueryCommand} = require('@aws-sdk/client-dynamodb');
+
 const dynamoDBClient = new DynamoDBClient({
     region: "eu-north-1",
     credentials: fromEnv(),
 });
 const tableName = 'weather_turkey';
 
-app.get('/api/weather', async (req, res) => {
-    try {
-        const requestedCity = req.query.city;
-
-        const cityModel = CityList.find(city => city.cityName === requestedCity);
-
-        const queryItemCommand = new QueryCommand({
-            TableName: tableName,
-            KeyConditionExpression: 'CityID = :cityId',
-            ExpressionAttributeValues: {
-                ':cityId': {N: cityModel.cityID.toString()},
-            },
-        });
-        const response = await dynamoDBClient.send(queryItemCommand);
-        const queryItems = response.Items;
-
-        const result = {
-            cityName: queryItems[0].CityName.S,
-            cityID: queryItems[0].CityID.N,
-            date: queryItems[0].currentDate.S,
-            weather: queryItems[0].currentWeather.S,
-            weatherUrl: queryItems[0].currentWeatherIconUrl.S,
-            temperatureSign: queryItems[0].temperatureSign.S,
-            humidity: queryItems[0].humidity.S
-        }
-        res.status(200).json({result});
-    } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).json({error: 'Internal server error.'});
-    }
-});
-
-/*app.get('/api/cron', async (req, res) => {
+(async() => {
     console.log("[cron] STARTED");
     try {
 
         for (const city of CityList) {
             const cityName = city.cityName;
 
-            const data = await getDataFromHtml('https://www.mgm.gov.tr/tahmin/il-ve-ilceler.aspx?il=' + cityName, 3);
+            const data = await getDataFromHtml('https://www.mgm.gov.tr/tahmin/il-ve-ilceler.aspx?il=' + cityName, 5);
 
             const date = new Date();
             const options = { day: 'numeric', month: '2-digit', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'shortOffset' };
@@ -82,7 +47,7 @@ app.get('/api/weather', async (req, res) => {
     } catch (error) {
         console.error('[cron] Error:', error.message);
     }
-})
+})();
 
 async function getDataFromHtml(url, maxRetries) {
     const browser = await puppeteer.launch();
@@ -123,8 +88,4 @@ async function getDataFromHtml(url, maxRetries) {
             console.error(`Retry ${retries}/${maxRetries}. Error: ${error.message}`);
         }
     }
-}*/
-
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-});
+}
