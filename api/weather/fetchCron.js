@@ -3,9 +3,10 @@ const CityList = require("../CityList");
 
 const app = express();
 const port = process.env.PORT || 3001;
+const chromium = require("chrome-aws-lambda");
 
 const {PutItemCommand} = require("@aws-sdk/client-dynamodb");
-const puppeteer = require("puppeteer");
+//const puppeteer = require("puppeteer");
 app.get('/api/weather/fetchCron', async (req, res) => {
     console.log("[cron] STARTED");
     try {
@@ -58,7 +59,14 @@ app.get('/api/weather/fetchCron', async (req, res) => {
 })
 
 async function getDataFromHtml(url, maxRetries) {
-    const browser = await puppeteer.launch();
+    //const browser = await puppeteer.launch();
+    const browser = await chromium.puppeteer.launch({
+        args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: true,
+        ignoreHTTPSErrors: true,
+    })
     const page = await browser.newPage();
     let retries = 0;
     let weatherData = {};
