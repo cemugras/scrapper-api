@@ -5,22 +5,20 @@ on:
     - cron: '30 * * * *'  
 
 jobs:
-  run-script:
+  weather-scheduled:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
 
-    - name: Run JavaScript file
-      run: |
-        node api/cron.js
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run script
+        run: node your_script_file.js

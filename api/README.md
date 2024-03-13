@@ -2,15 +2,17 @@
 
 This project was generated with [Node.js](https://nodejs.org/en) version 18.17.1.
 
-| Package      | Version  |
-|--------------|----------|
-| express      | 4.18.2   |
-| Puppeteer    | 22.3.0   |
-| aws-sdk      | 2.1571.0 |
+| Package     | Version  |
+|-------------|----------|
+| express     | 4.18.2   |
+| Puppeteer   | 22.3.0   |
+| aws-sdk     | 2.1571.0 |
+| node-fetch  | 3.3.2    |
 
 - For express version -> `npm show express version`
 - For axios version -> `npm show puppeteer version`
 - For aws-sdk version -> `npm show aws-sdk version`
+- For node-fetch version -> `npm show node-fetch version`
 
 The project is on live with the following endpoint:
 
@@ -25,7 +27,7 @@ The project is on live with the following endpoint:
 - `npm install -g nodemon` -> tool for updating code changes automaticly without restart server.
 - `npm install express` -> required framework.
 - `npm install puppeteer` -> nodejs client.
-- `npm install vercel@latest` -> for Vercel cronjob process.
+- `npm install node-fetch` -> for Github Actions scheduled cron HTTP request to cron api.
 - `npm install @aws-sdk/client-dynamodb` -> for AWS SDKv3 DynamoDB client.
 - `npm install @aws-sdk/credential-providers` -> for AWS SDKv3 DynamoDB client credentials with json.
 
@@ -39,8 +41,9 @@ The project is on live with the following endpoint:
     - It provides html data parser with waiting for all parameters.
 3) #### [AWS DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html) Development Notes |
     - It provides NoSQL database service.
+4) #### [node-fetch](https://www.npmjs.com/package/node-fetch) Development Notes |
+   - It provides HTTP client.
 
 ## Features Inprogress
-- [x] Weather Api for General Purposes
-- [x] Weather Api for General Purposes
+- [x] Weather Cron Api Updating Current Weather Data
 - [x] Weather Api Query with Cities
