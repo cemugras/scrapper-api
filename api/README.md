@@ -18,8 +18,8 @@ The project is on live with the following endpoint:
 
 ## Development server
 
-- `npm run weather` for dev server of weather.js Navigate to `http:,//localhost:3000/`.
-- `npm run cron` for dev server of weather-cron.js Navigate to `http:,//localhost:3001/`.
+- `npm run weather` for dev server of getWeather.js Navigate to `http:,//localhost:3000/`.
+- `npm run cron` for dev server of fetchCron.js Navigate to `http:,//localhost:3001/`.
 - The application will automatically reload if you change any of the source files.
 
 ## Code scaffolding

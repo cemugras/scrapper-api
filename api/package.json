@@ -2,10 +2,10 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "weather/weather.js",
+  "main": "weather/getWeather.js",
   "scripts": {
-    "weather": "nodemon weather/weather.js",
-    "cron": "nodemon weather-cron/weather-cron.js"
+    "weather": "nodemon weather/getWeather.js",
+    "cron": "nodemon weather/fetchCron.js"
   },
   "keywords": [],
   "author": "",

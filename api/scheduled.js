@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 async function callCron() {
     try {
-        const response = await fetch('https://cemugras-api.vercel.app/api/weather/cron');
+        const response = await fetch('https://cemugras-api.vercel.app/api/weather/fetchCron');
         return await response.json();
     } catch (error) {
         console.error('Error:', error.message);

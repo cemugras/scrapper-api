@@ -6,7 +6,7 @@ const port = process.env.PORT || 3001;
 
 const {PutItemCommand} = require("@aws-sdk/client-dynamodb");
 const puppeteer = require("puppeteer");
-app.get('/api/weather/cron', async (req, res) => {
+app.get('/api/weather/fetchCron', async (req, res) => {
     console.log("[cron] STARTED");
     try {
         res.status(200).json({result: 'Success.'});

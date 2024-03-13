@@ -12,7 +12,7 @@ const dynamoDBClient = new DynamoDBClient({
 });
 const tableName = 'weather_turkey';
 
-app.get('/api/weather', async (req, res) => {
+app.get('/api/weather/getWeather', async (req, res) => {
     try {
         const requestedCity = req.query.city;
 
