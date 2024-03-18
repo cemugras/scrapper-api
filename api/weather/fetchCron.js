@@ -3,10 +3,17 @@ const CityList = require("../CityList");
 
 const app = express();
 const port = process.env.PORT || 3001;
-const chromium = require("chrome-aws-lambda");
 
-const {PutItemCommand} = require("@aws-sdk/client-dynamodb");
-//const puppeteer = require("puppeteer");
+const {PutItemCommand, DynamoDBClient} = require("@aws-sdk/client-dynamodb");
+const puppeteer = require("puppeteer");
+const {fromEnv} = require("@aws-sdk/credential-providers");
+
+const dynamoDBClient = new DynamoDBClient({
+    region: "eu-north-1",
+    credentials: fromEnv(),
+});
+
+const tableName = 'weather_turkey';
 app.get('/api/weather/fetchCron', async (req, res) => {
     console.log("[cron] STARTED");
     try {
@@ -60,13 +67,12 @@ app.get('/api/weather/fetchCron', async (req, res) => {
 
 async function getDataFromHtml(url, maxRetries) {
     //const browser = await puppeteer.launch();
-    const browser = await chromium.puppeteer.launch({
-        args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath,
+    const browser = await puppeteer.launch({
         headless: true,
-        ignoreHTTPSErrors: true,
-    })
+        args: [
+            `--disable-setuid-sandbox`
+        ]
+    });
     const page = await browser.newPage();
     let retries = 0;
     let weatherData = {};
@@ -78,8 +84,8 @@ async function getDataFromHtml(url, maxRetries) {
             await page.goto(url, {waitUntil: 'load'});
 
             // Wait for page selector data loading
-            //await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-deger.ng-binding');
-            //await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-havadurumu > div.anlik-sicaklik-havadurumu-ikonu > img');
+            await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-deger.ng-binding');
+            await page.waitForSelector('#pages > div > section > div.anlik-durum > div.anlik-sicaklik > div.anlik-sicaklik-havadurumu > div.anlik-sicaklik-havadurumu-ikonu > img');
 
             // Parse required values and set to parameters
             const currentWeather = await page.$eval('div.anlik-sicaklik-deger.ng-binding', el => el.textContent.trim());
