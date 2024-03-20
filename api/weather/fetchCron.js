@@ -52,7 +52,7 @@ app.get('/api/weather/fetchCron', async (req, res) => {
                 });
 
                 dynamoDBClient.send(putItemCommand).then(response => {
-                    console.log("[cron] Item inserted :: City=" + cityName);
+                    console.log("[cron] Item inserted :: City=" + cityName + " CityID=" + city.cityID);
                     console.log("--------------------");
                 })
             }
@@ -104,12 +104,14 @@ async function getDataFromHtml(url, maxRetries) {
             weatherData.currentWeatherIconUrl = currentWeatherIconUrl;
 
             weatherData.humidity = humidityValue;
+            break;
 
-            return weatherData;
         } catch (error) {
             console.error(`Retry ${retries}/${maxRetries}. Error: ${error.message}`);
         }
     }
+
+    return weatherData;
 }
 
 app.listen(port, () => {
