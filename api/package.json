@@ -5,7 +5,8 @@
   "main": "weather/getWeather.js",
   "scripts": {
     "weather": "nodemon weather/getWeather.js",
-    "cron": "nodemon weather/fetchCron.js"
+    "cron": "nodemon weather/fetchCron.js",
+    "update": "nodemon weather/updateWeather.js"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +14,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.525.0",
     "@aws-sdk/credential-providers": "^3.525.0",
-    "chrome-aws-lambda": "^9.1.0",
+    "axios": "^1.6.8",
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
     "puppeteer": "^22.3.0"

@@ -1,5 +1,5 @@
 const express = require('express');
-const CityList = require('../CityList');
+const CityList = require('../data/CityList');
 
 const app = express();
 const port = process.env.PORT || 3000;
