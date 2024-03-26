@@ -23,7 +23,7 @@ app.get('/api/weather/updateWeather', async (req, res) => {
         res.status(200).json({result: 'Success.'});
 
         for (const city of CityList) {
-            const cityName = city.cityName;
+            let fetched = false;
             const geocode = city.lat + "," + city.lon;
 
             const requestBody = [
@@ -37,16 +37,36 @@ app.get('/api/weather/updateWeather', async (req, res) => {
             ];
             const apiUrl = 'https://weather.com/api/v1/p/redux-dal';
 
-            axios.post(apiUrl, requestBody)
-                .then(response => {
-                    const temperature = response.data.dal.getSunV3CurrentObservationsUrlConfig['geocode:'+geocode+';units:m'].data.temperature;
-                    //Days.find(day -> day )
-                    console.log('temperature:', temperature);
-                })
-                .catch(error => {
-                    console.error('Error:', error.message);
-                });
+            let retries = 0;
+            while (retries < 3) {
+                console.log("[updateWeather] CityID="+city.cityID, "CityName="+city.cityName, "Retry="+retries);
+                retries++;
+                await axios.post(apiUrl, requestBody)
+                    .then(response => {
+                        const data = response.data.dal.getSunV3CurrentObservationsUrlConfig['geocode:'+geocode+';units:m'].data;
+                        const temperature = data.temperature;
+                        const humidity = data.relativeHumidity;
+                        const day = Days.find((day) => day.dayEng === data.dayOfWeek);
+                        const weatherDate = data.validTimeLocal;
 
+                        console.log('[updateWeather] temperature:', temperature);
+                        console.log('[updateWeather] humidity:', humidity);
+                        console.log('[updateWeather] day:', day);
+                        console.log('[updateWeather] weatherDate:', weatherDate);
+                        if(temperature && humidity && day && weatherDate) {
+                            fetched = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('[updateWeather] Error:', error.message);
+                    });
+                if(fetched) {
+                    break;
+                }
+            }
+
+
+            console.log('[updateWeather] .............');
             /*const date = new Date();
             const options = {
                 day: 'numeric',
