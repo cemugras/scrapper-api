@@ -5,7 +5,6 @@
   "main": "weather/getWeather.js",
   "scripts": {
     "weather": "nodemon weather/getWeather.js",
-    "cron": "nodemon weather/fetchCron.js",
     "updater": "nodemon weather/updateWeather.js"
   },
   "keywords": [],
